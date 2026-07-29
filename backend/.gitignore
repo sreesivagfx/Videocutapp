@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+storage/uploads/*
+storage/outputs/*
+storage/jobs/*
+!storage/uploads/.gitkeep
+!storage/outputs/.gitkeep
+!storage/jobs/.gitkeep
+.env
+storage/test_assets/
