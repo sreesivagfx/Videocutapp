@@ -4,7 +4,7 @@ import { use, useCallback, useEffect, useRef, useState } from "react";
 import TopBar from "@/components/TopBar";
 import CaptionStylePicker from "@/components/CaptionStylePicker";
 import JobProgress from "@/components/JobProgress";
-import { downloadUrl, getJob, startPipeline } from "@/lib/api";
+import { downloadUrl, getJob, startPipeline, thumbnailUrl } from "@/lib/api";
 import type { JobStatusResponse } from "@/lib/types";
 import { Download, Sparkles, Clock } from "lucide-react";
 
@@ -202,8 +202,21 @@ export default function EditorWorkspace({ params }: { params: Promise<{ projectI
                         <video
                           controls
                           className="aspect-[9/16] w-full bg-black object-contain"
+                          poster={s.thumbnail ? thumbnailUrl(jobId!, s.thumbnail) : undefined}
                           src={downloadUrl(jobId!, filename)}
                         />
+                      ) : s.thumbnail ? (
+                        <div className="relative aspect-[9/16] w-full bg-black">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={thumbnailUrl(jobId!, s.thumbnail)}
+                            alt={s.title}
+                            className="h-full w-full object-cover opacity-60"
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/30 text-xs text-slate-200">
+                            Rendering…
+                          </div>
+                        </div>
                       ) : (
                         <div className="flex aspect-[9/16] w-full items-center justify-center bg-black/60 text-xs text-slate-500">
                           Rendering…

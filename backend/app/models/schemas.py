@@ -47,6 +47,7 @@ class ShortCandidate(BaseModel):
     score: float
     reason: str
     title: str
+    thumbnail: Optional[str] = None
 
 
 class CreateProjectResponse(BaseModel):

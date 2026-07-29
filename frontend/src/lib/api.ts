@@ -3,6 +3,7 @@ import type {
   CreateProjectResponse,
   FontEntry,
   JobStatusResponse,
+  ProjectSummary,
   TransitionEntry,
 } from "./types";
 
@@ -50,6 +51,16 @@ export async function getJob(jobId: string): Promise<JobStatusResponse> {
 
 export function downloadUrl(jobId: string, filename: string): string {
   return `${API_BASE}/jobs/${jobId}/download/${filename}`;
+}
+
+export function thumbnailUrl(jobId: string, thumbnailPath: string): string {
+  const filename = thumbnailPath.split("/").pop();
+  return `${API_BASE}/jobs/${jobId}/thumbnail/${filename}`;
+}
+
+export async function listProjects(): Promise<ProjectSummary[]> {
+  const res = await fetch(`${API_BASE}/projects`, { cache: "no-store" });
+  return handle(res);
 }
 
 export async function listCaptionStyles(): Promise<CaptionStylePreset[]> {

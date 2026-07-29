@@ -1,10 +1,9 @@
-"""In-process job tracking. Fine for an MVP/single-instance deployment; swap
-for Celery/RQ + Redis (or a DB-backed table) before running multiple backend
-instances, since state here lives only in this process's memory.
+"""Job tracking backed by SQLite (see app/db.py) so job state survives a
+backend restart. Returns the same Job shape callers already depend on.
 """
-import threading
 from dataclasses import dataclass, field
 
+from app import db
 from app.models.schemas import JobStatus, ShortCandidate
 
 
@@ -20,26 +19,26 @@ class Job:
     error: str | None = None
 
 
-_jobs: dict[str, Job] = {}
-_lock = threading.Lock()
-
-
 def create(job_id: str, project_id: str) -> Job:
-    with _lock:
-        job = Job(job_id=job_id, project_id=project_id)
-        _jobs[job_id] = job
-        return job
+    db.create_job(job_id, project_id)
+    return Job(job_id=job_id, project_id=project_id)
 
 
 def get(job_id: str) -> Job | None:
-    with _lock:
-        return _jobs.get(job_id)
+    row = db.get_job(job_id)
+    if row is None:
+        return None
+    return Job(
+        job_id=row["id"],
+        project_id=row["project_id"],
+        status=JobStatus(row["status"]),
+        progress=row["progress"],
+        message=row["message"],
+        shorts=[ShortCandidate(**s) for s in row["shorts"]],
+        outputs=row["outputs"],
+        error=row["error"],
+    )
 
 
 def update(job_id: str, **kwargs) -> None:
-    with _lock:
-        job = _jobs.get(job_id)
-        if job is None:
-            return
-        for k, v in kwargs.items():
-            setattr(job, k, v)
+    db.update_job(job_id, **kwargs)

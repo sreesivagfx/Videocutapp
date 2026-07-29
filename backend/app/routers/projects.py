@@ -3,7 +3,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, UploadFile, File, HTTPException
 
-from app import config
+from app import config, db
 from app.models.schemas import CreateProjectResponse
 
 router = APIRouter(prefix="/projects", tags=["projects"])
@@ -31,4 +31,10 @@ async def upload_video(file: UploadFile = File(...)):
                 raise HTTPException(413, "File too large (max 2GB)")
             out.write(chunk)
 
+    db.create_project(project_id, file.filename or dst.name)
     return CreateProjectResponse(project_id=project_id, filename=file.filename or dst.name)
+
+
+@router.get("")
+def list_projects():
+    return db.list_projects()

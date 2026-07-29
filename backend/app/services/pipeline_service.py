@@ -40,7 +40,6 @@ def _run_pipeline(job_id: str, req: StartPipelineRequest) -> None:
             min_duration_sec=req.min_duration_sec,
             max_duration_sec=req.max_duration_sec,
         )
-        job_store.update(job_id, shorts=shorts)
 
         if not shorts:
             job_store.update(
@@ -49,10 +48,23 @@ def _run_pipeline(job_id: str, req: StartPipelineRequest) -> None:
             )
             return
 
-        style = style_presets.get_style(req.caption_style_id)
-        outputs: list[str] = []
         project_out_dir = config.OUTPUTS_DIR / req.project_id
         project_out_dir.mkdir(parents=True, exist_ok=True)
+
+        for short in shorts:
+            thumb_path = project_out_dir / f"thumb_{short.id}.jpg"
+            try:
+                ffmpeg_service.extract_thumbnail(
+                    src_video, thumb_path, short.start, aspect=req.target_aspect,
+                )
+                short.thumbnail = str(thumb_path.relative_to(config.STORAGE_DIR))
+            except ffmpeg_service.FFmpegError:
+                pass  # thumbnail is a nice-to-have; don't fail the job over it
+
+        job_store.update(job_id, shorts=shorts)
+
+        style = style_presets.get_style(req.caption_style_id)
+        outputs: list[str] = []
 
         for i, short in enumerate(shorts):
             job_store.update(

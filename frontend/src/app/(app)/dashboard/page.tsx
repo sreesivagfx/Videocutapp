@@ -5,13 +5,26 @@ import Link from "next/link";
 import TopBar from "@/components/TopBar";
 import UploadDropzone from "@/components/UploadDropzone";
 import { getRecentProjects, RecentProject } from "@/lib/recentProjects";
+import { listProjects } from "@/lib/api";
 import { FileVideo } from "lucide-react";
 
 export default function DashboardPage() {
   const [recent, setRecent] = useState<RecentProject[]>([]);
 
   useEffect(() => {
-    setRecent(getRecentProjects());
+    // Backend is the source of truth (persists across devices/restarts);
+    // localStorage is just a same-browser fallback if that fetch fails.
+    listProjects()
+      .then((projects) =>
+        setRecent(
+          projects.map((p) => ({
+            project_id: p.id,
+            filename: p.filename,
+            createdAt: p.created_at * 1000,
+          }))
+        )
+      )
+      .catch(() => setRecent(getRecentProjects()));
   }, []);
 
   return (

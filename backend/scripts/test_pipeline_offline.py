@@ -74,6 +74,10 @@ def main():
     style = style_presets.get_style("tiktok-pop")
 
     for s in shorts:
+        thumb_path = out_dir / f"thumb_{s.id}.jpg"
+        ffmpeg_service.extract_thumbnail(src_video, thumb_path, s.start, aspect="9:16")
+        print(f"Thumbnail: {thumb_path} ({thumb_path.stat().st_size} bytes)")
+
         ass_path = out_dir / f"{s.id}.ass"
         caption_service.write_ass(segments, style, s.start, s.end, ass_path)
         print(f"\nWrote ASS: {ass_path} ({ass_path.stat().st_size} bytes)")

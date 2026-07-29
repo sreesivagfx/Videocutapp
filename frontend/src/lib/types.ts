@@ -13,6 +13,13 @@ export interface ShortCandidate {
   score: number;
   reason: string;
   title: string;
+  thumbnail?: string | null;
+}
+
+export interface ProjectSummary {
+  id: string;
+  filename: string;
+  created_at: number;
 }
 
 export interface JobStatusResponse {

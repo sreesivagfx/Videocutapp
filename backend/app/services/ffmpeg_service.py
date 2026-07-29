@@ -114,6 +114,21 @@ def denoise_audio_file(src_wav: Path, dst_wav: Path) -> None:
     ])
 
 
+def extract_thumbnail(src: Path, dst_jpg: Path, at_seconds: float, aspect: str = "9:16") -> None:
+    """Grabs a single cropped frame as a JPEG poster image, used to preview a
+    short candidate before its full render finishes."""
+    src_w, src_h = get_video_dimensions(src)
+    crop = _crop_filter(src_w, src_h, aspect)
+    _run([
+        "ffmpeg", "-y",
+        "-ss", str(max(at_seconds, 0)),
+        "-i", str(src),
+        "-vf", f"{crop},scale=540:960" if aspect == "9:16" else f"{crop},scale=540:540",
+        "-frames:v", "1", "-update", "1",
+        str(dst_jpg),
+    ])
+
+
 def mux_audio_replace(src_video: Path, new_audio: Path, dst: Path) -> None:
     """Replace a video's audio track (used after TTS dubbing / voice-over)."""
     _run([
