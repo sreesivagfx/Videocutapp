@@ -79,7 +79,11 @@ Frontend expects the backend at `NEXT_PUBLIC_API_URL` (defaults to `http://local
 - [x] Noise removal (ffmpeg afftdn filter)
 - [x] Text-to-speech via open-source engine, provider-swappable
 - [x] Translation via provider abstraction (needs an API key for real quality)
+- [x] Persistent project/job storage (SQLite, `app/db.py`) — survives backend restarts
+- [x] Short preview thumbnails, generated as soon as highlights are detected
 - [ ] Voice cloning — interface + consent gate defined, requires an external provider key
 - [ ] Auth/billing (Stripe) — not built; add before public launch
-- [ ] Object storage (S3/R2) — currently local disk, swap `services/storage.py` for prod
-- [ ] Background job queue — currently in-process thread pool; swap for Celery/RQ + Redis at scale
+- [ ] Object storage (S3/R2) — currently local disk under `backend/storage/`; swap the read/write
+      paths in `app/config.py` and the upload/download routes for an S3-compatible client at scale
+- [ ] Background job queue — currently an in-process thread pool; swap for Celery/RQ + Redis once
+      running more than one backend instance
