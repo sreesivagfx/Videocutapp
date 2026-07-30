@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: videocut-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: CORS_ORIGINS
+        sync: false # set to your deployed frontend URL, e.g. https://your-app.vercel.app
+      - key: WHISPER_MODEL_SIZE
+        value: tiny # 'base' is the app default but 'tiny' fits the free tier's CPU/RAM better
+    disk:
+      name: videocut-storage
+      mountPath: /app/storage
+      sizeGB: 1
