@@ -10,11 +10,13 @@ import {
   Mic2,
   Settings,
   Film,
+  Images,
 } from "lucide-react";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/editor", label: "Editor", icon: Scissors },
+  { href: "/collage", label: "Collage Studio", icon: Images },
   { href: "/styles-library", label: "Style Library", icon: Type },
   { href: "/translate", label: "Translate", icon: Languages },
   { href: "/audio-studio", label: "Audio Studio", icon: Mic2 },
